@@ -21,9 +21,9 @@ int main( int arg, char *argv[] ) {
    /* Create three N x N double precision floating point matrixes on the heap
     * using malloc
     */
-   double *A = (double *) malloc( N * N * sizeof(double) );   // First 'A' matrix
-   double *B = (double *) malloc( N * N * sizeof(double) );   // Second 'B' matrix
-   double *C = (double *) malloc( N * N * sizeof(double) );   // Third 'C' matrix
+   double A[512*512];   // First 'A' matrix
+   double B[512*512];   // 'B' matrix
+   double C[512*512];   // 'C' matrix
   
    /* The following code loads random values into the matrixes.
     * We don't need to initialize 'C' because it will hold the
@@ -34,11 +34,6 @@ int main( int arg, char *argv[] ) {
 
    // Carry out double-precision generic matrix multiplication 
    dgemm( N, A, B, C );
-
-   // Free up the memory
-   free( A );
-   free( B );
-   free( C );
 
    return 0;
 }
