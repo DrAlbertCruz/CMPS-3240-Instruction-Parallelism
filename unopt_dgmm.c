@@ -7,17 +7,13 @@ void dgemm( int n, double* A, double* B, double* C );
 void initRandMat( int m, double* A );
 
 int main( int arg, char *argv[] ) {
-   if( arg != 2 ) {
-     printf( "Usage: ./unopt_dgmm.out N ... where N is the length of one size of the matrix\n"  );
-     return 0;
-   }
    // Initialize random
    srand( time( 0 ) );
 
    /* A matrix has two sizes. For these labs we assume that the matrix is square,
     * of size N x N 
     */
-   const int N = atoi( argv[1] );    
+   const int N = 512;    
    printf( "Running matrix multiplication of size %d x %d", N, N );
 
    /* Create three N x N double precision floating point matrixes on the heap
