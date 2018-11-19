@@ -22,8 +22,9 @@ CMPS 3240 Computer Architecture: Instruction level parallelism in x86-64
 
 Instruction-level parallelism makes use of loop unrolling to reduce the number of delays due to branch prediction. At the end (or start) of a for loop a check is carried out to determine if a loop should keep going or not. 
 ```c
-for(i=0;i<someLimit;i++)
+for(i=0;i<someLimit;i++) {
    // do something
+}
 ```
 Consider how this would translate to MIPS:
 ```mips
@@ -41,11 +42,12 @@ A branch delay would be caused at the start of every loop body. This would cause
 ```
 but this has limited usefulness. It would also cause the code to have a hard-coded number of times to execute ``something``. There is indeed a middle ground, where we can actually execute multiple ``somethings`` within a single iteration of the loop body:
 ```c
-for(i=0;i<someLimit;i++)
+for(i=0;i<someLimit;i++) {
 // do something 1
 // do something 2
 // do something 3
 // do something 4
+}
 ```
 This is a good middle-ground, and it's what we will implement in this lab. Your goal is to improve your previous DAXPY code with loop unrolling.
 
