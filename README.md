@@ -81,12 +81,14 @@ gcc -S -mavx -std=c99 -o unopt_dgmm.asm -c unopt_dgmm.c
 gcc -S -mavx -std=c99 -o unroll_dgmm.asm -c unroll_dgmm.c
 ```
 
-Consider only the first four lines (we will get back to the last two lines, which generate x86 assembly code later). If you get errors, either (1) your processor doesn't have AVX or (2) you're on a Windows machine. It is possible to compile this on a Windows machine, you just need to look at the original AVX lab to see what changes need to be made. Note two things:
+Consider only the first four lines (we will get back to the last two lines, which generate x86 assembly code later). If you get errors, either (1) your processor doesn't have AVX or (2) you're on a Windows machine. It is possible to compile this on a Windows machine, you just need to look at the original AVX lab to see what changes need to be made. Note the following things:
 
-1.  The unoptimized version continues to use ``-O0`` from the last time we did AVX. Normally the compiler will attempt to optimize the code with the strategies we are learning about. ``-O0`` will prevent it from doing so. Hence, it is unoptimized.
-1. The unrolled version uses ``-O3``. This allows the compiler to unroll your code. It will automatically duplicate the loop bodies. 
+1. The unoptimized version continues to use ``-O0`` from the last time we did AVX. Normally the compiler will attempt to optimize the code with the strategies we are learning about. ``-O0`` will prevent it from doing so. Hence, it is unoptimized.
+1. The optimized version (`unroll_dgmm.c`) has the flag ``-O3``. This allows the compiler to optimize your code. It is helpful but we need to do one more thing ...
+1. The optimized version (`unroll_dgmm.c`) also has the flag ``funroll-loops``. This allows the compiler to unroll loops where the number of iterations can be determined during compile time ...
+1. Previously, we allowed the user to specify the size of the array. However, for `gcc`'s unroll to work, it needs to know the size of the arrays during compile time. This version of `unroll_dgmm.c` has the matrixes located in the stack, versus the heap. I.e. it does not use `malloc`, and the user cannot specify the size of the operation during run time.
 
-With ``-O3`` the compiler will tend to unroll stuff for us, but we will take additional steps to help with the unroll. Open ``unroll_dgmm.c`` and look at the following definition:
+With ``-O3`` and ``funroll-loops`` flags the compiler will tend to unroll stuff for us, but we will take additional steps to help with the unroll. Open ``unroll_dgmm.c`` and look at the following definition:
 
 ```c
 #define UNROLL (4)
@@ -102,37 +104,25 @@ for ( int x = 0; x < UNROLL; x++ )
 ...
 ```
 
-We change the loop body to execute four times, rather than once. Study the code, and when you're confident you undertand what's going one time the results:
+We change the loop body to execute four times, rather than once. Study the code, and when you're confident you undertand what's going one time the results. *Again, note that you can no longer specify the size of the arrays during run time because of gcc needing to know the number of loop iterations during compile time*.
 
 ```term
-$ time ./unopt_dgmm.out 512
+$ time ./unopt_dgmm.out
 Running matrix multiplication of size 512 x 512
 real    0m0.634s
 user    0m0.625s
 sys    0m0.005s
-$ time ./unroll_dgmm.out 512
+$ time ./unroll_dgmm.out
 Running matrix multiplication of size 512 x 512
 real    0m0.276s
 user    0m0.269s
 sys    0m0.004s
 ```
+This verifies the improvement at a high-level. 
 
-This verifies the improvement at a high-level. To view it at a low-level you will need to take a look at the ``.asm`` files that were generated from the make file. Deep in ``unroll_dgmm.asm`` is:
+### Sidebar
 
-```nasm
-...
-vmulpd    -96(%rbx), %ymm4, %ymm5
-vaddpd    %ymm5, %ymm3, %ymm3
-vmulpd    -64(%rbx), %ymm4, %ymm5
-vaddpd    %ymm5, %ymm2, %ymm2
-vmulpd    -32(%rbx), %ymm4, %ymm5
-vaddpd    %ymm5, %ymm1, %ymm1
-vmulpd    (%rbx), %ymm4, %ymm4
-vaddpd    %ymm4, %ymm0, %ymm0
-...
-```
-
-A set instruction  ``vmulpd`` and ``vaddpd`` carries out a packed, subword parallelism multiply and addition. Here we see evidence of the compiler having unrolled the loop body into four executions, rather than one. When you're satisfied with your understanding of loop unrolling with DGEMM, proceed to the next section.
+*This section is not necessary to complete the lab. It provides instructions for the curious who may want to see how the unrolling occured at the assembly level*. To view the improvement at a low-level you will need to take a look at the ``.asm`` files that were generated from the make file. The exact implemention of the unroll will vary depending on your environment (Mac, Windows, Linux), and which version of GCC you are using. You will want to compare `unopt_dgmm.asm` and `unroll_dgmm.asm` and find places where `unopt_dgmm.asm` repeated a chunk of code four times. When you're satisfied with your understanding of loop unrolling with DGEMM, proceed to the next section.
 
 ## Part 2 - DAXPY
 
