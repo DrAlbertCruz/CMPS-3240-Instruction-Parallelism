@@ -21,9 +21,9 @@ int main( int arg, char *argv[] ) {
    /* Create three N x N double precision floating point matrixes on the heap
     * using malloc
     */
-   double A[512*512];   // First 'A' matrix
-   double B[512*512];   // 'B' matrix
-   double C[512*512];   // 'C' matrix
+   double A[N*N];   // First 'A' matrix
+   double B[N*N];   // 'B' matrix
+   double C[N*N];   // 'C' matrix
   
    /* The following code loads random values into the matrixes.
     * We don't need to initialize 'C' because it will hold the
