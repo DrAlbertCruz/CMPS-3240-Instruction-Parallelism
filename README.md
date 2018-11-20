@@ -144,5 +144,5 @@ Feel free to build off your last AVX lab's DAXPY code.
 Include responses to the following questions in your lab report:
 
 1. With DGEMM, why did we have to change ``__m256d c;`` to ``__m256d c[4];`` after unrolling?
-2. Investigate the flag(s) that can be used to have the gcc compiler automatically unroll loops for you. What is it's pros and cons?
-3. Give an equation that expresses the execution time of a for loop in terms of the number of iterations, the time of execution of the loop body, and overhead of the loop (including delay). How does the equation change when you unroll the loop four times?
+2. Investigate the flag(s) that can be used to have the gcc compiler automatically unroll loops for you. What are the pros and cons?
+3. Can the you run this experiment if the vector lengths are given during run time?
